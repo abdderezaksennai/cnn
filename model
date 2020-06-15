@@ -1,0 +1,246 @@
+import cv2
+import numpy as np
+from tensorflow.keras.preprocessing.image import ImageDataGenerator
+from tensorflow.keras.models import Sequential, Model
+from tensorflow.keras.optimizers import Adam
+import tensorflow.keras.metrics as metrics
+
+from tensorflow.keras.layers import Conv2D, MaxPooling2D, Concatenate, Input, Flatten, Dense, Dropout, BatchNormalization,ZeroPadding2D
+
+
+import matplotlib.pyplot as plt
+import matplotlib.image as img
+%matplotlib inline
+
+import os
+import glob as gb
+
+import tensorflow as tf
+size = 256
+batch_size=16
+
+
+        
+
+...
+# create a data generator
+datagen = ImageDataGenerator()
+# load and iterate training dataset
+train_it = datagen.flow_from_directory('/content/drive/My Drive/dataset/Training', class_mode='categorical')
+val_it = datagen.flow_from_directory('/content/drive/My Drive/dataset/Validation', class_mode='categorical')
+test_it = datagen.flow_from_directory('/content/drive/My Drive/dataset/Test', class_mode='categorical')
+
+
+
+model = Sequential()
+
+model.add(
+    Conv2D
+        (filters = 64,
+         kernel_size = (7,7),
+         strides = (2,2),
+         padding = "same",
+         activation='relu',
+         input_shape=(size,size,3)
+        )
+         )
+model.add( MaxPooling2D( pool_size=(3, 3), strides=(2, 2), padding = 'same' ))
+model.add(BatchNormalization())
+model.add(
+    Conv2D(
+        filters = 64,
+        kernel_size = (1, 1),
+        strides =(1, 1),
+        padding = 'same',
+        activation = 'relu',
+        
+    )
+)
+model.add(
+    Conv2D(
+        filters = 192,
+        kernel_size = (3, 3),
+        strides =(1, 1),
+        padding = 'same',
+        activation = 'relu',
+        
+    )
+)
+model.add(BatchNormalization())
+model.add(
+    MaxPooling2D(
+        pool_size=(3, 3), strides=(2, 2), padding = 'same'
+    )
+)
+inp_1 = Input(shape=(32,32,192))
+#------------------------------------------------------------------------------
+conv2d_11 = Conv2D(
+        filters = 32,
+        kernel_size = (1, 1),
+        strides =(1, 1),
+        padding = 'SAME',
+        activation = 'relu',
+    )(inp_1)
+
+conv2d_12 = Conv2D(
+        filters = 64,
+        kernel_size = (3, 3),
+        strides =(1, 1),
+        padding = 'SAME',
+        activation = 'relu',
+    )(inp_1)
+
+conv2d_13 = Conv2D(
+        filters = 128,
+        kernel_size = (5, 5),
+        strides =(1, 1),
+        padding = 'SAME',
+        activation = 'relu',
+    )(inp_1)
+
+out_1 = Concatenate()([conv2d_11, conv2d_12, conv2d_13])
+p_1 = Model(inp_1, out_1)
+model.add(p_1)
+model.add(BatchNormalization())
+model.add(
+    MaxPooling2D(
+        pool_size=(3, 3), strides=(2, 2), padding = 'same'
+    )
+)
+inp_2 = Input(shape=(16,16,224))
+#--------------------------------------------------------------------------------
+conv2d_21 = Conv2D(
+        filters = 32,
+        kernel_size = (1, 1),
+        strides =(1, 1),
+        padding = 'same',
+        activation = 'relu',
+    )(inp_2)
+conv2d_22 = Conv2D(
+        filters = 64,
+        kernel_size = (3, 3),
+        strides =(1, 1),
+        padding = 'same',
+        activation = 'relu',
+    )(inp_2)
+conv2d_23 = Conv2D(
+        filters = 128,
+        kernel_size = (5, 5),
+        strides =(1, 1),
+        padding = 'same',
+        activation = 'relu',
+     
+    )(inp_2)
+
+out_2 = Concatenate()([conv2d_21, conv2d_22, conv2d_23])
+p_2 = Model(inp_2, out_2)
+model.add(p_2)
+inp_3 = Input(shape=(16,16,224))
+#---------------------------------------------------------------------------------
+conv2d_31 = Conv2D(
+        filters = 32,
+        kernel_size = (1, 1),
+        strides =(1, 1),
+        padding = 'same',
+        activation = 'relu',
+ 
+    )(inp_3)
+
+conv2d_32 = Conv2D(
+        filters = 64,
+        kernel_size = (3, 3),
+        strides =(1, 1),
+        padding = 'same',
+        activation = 'relu',
+ 
+    )(inp_3)
+
+conv2d_33 = Conv2D(
+        filters = 128,
+        kernel_size = (5, 5),
+        strides =(1, 1),
+        padding = 'same',
+        activation = 'relu',
+ 
+    )(inp_3)
+out_3 = Concatenate()([conv2d_31, conv2d_32, conv2d_33])
+p_3 = Model(inp_3, out_3)
+model.add(p_3)
+model.add(BatchNormalization())
+model.add(
+    MaxPooling2D(
+        pool_size=(3, 3), strides=(2, 2), padding = 'same',
+    )
+)
+inp_4 = Input(shape=(8,8,224))
+#---------------------------------------------------------------------------------
+conv2d_41 = Conv2D(
+        filters = 32,
+        kernel_size = (1, 1),
+        strides =(1, 1),
+        padding = 'same',
+        activation = 'relu',
+    )(inp_4)
+
+conv2d_42 = Conv2D(
+        filters = 64,
+        kernel_size = (3, 3),
+        strides =(1, 1),
+        padding = 'same',
+        activation = 'relu',
+    )(inp_4)
+
+conv2d_43 = Conv2D(
+        filters = 128,
+        kernel_size = (5, 5),
+        strides =(1, 1),
+        padding = 'same',
+        activation = 'relu',
+    )(inp_4)
+
+out_4 = Concatenate()([conv2d_41, conv2d_42, conv2d_43])
+p_4 = Model(inp_4, out_4)
+model.add(p_4)
+model.add(
+    MaxPooling2D(
+        pool_size=(7, 7), strides=(1, 1), padding = 'same',
+    )
+)
+model.add(Flatten())
+#------------------------------------------------------------------
+model.add(
+    Dense(
+        1000,
+        activation='relu'
+    )
+)
+model.add(
+    Dense(
+        100,
+        activation='relu'
+    )
+)
+model.add(
+    Dense(
+        2,
+        activation='softmax'
+    )
+)
+
+
+
+
+model.summary()
+solver = Adam(learning_rate = 0.001)
+model.compile(
+    optimizer=solver,
+    loss='categorical_crossentropy',
+    metrics=['accuracy']
+)
+model.fit(
+        train_it,
+        epochs=40,
+        batch_size=16,
+        verbose=1
+        )
+model.evaluate(train_it)
